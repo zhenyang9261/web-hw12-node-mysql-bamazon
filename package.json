@@ -1,0 +1,24 @@
+{
+  "name": "web-hw12-node-mysql-bamazon",
+  "version": "1.0.0",
+  "description": "Bamazon App",
+  "main": "bamazonCustomer.js",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "mysql": "^2.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhenyang9261/web-hw12-node-mysql-bamazon.git"
+  },
+  "author": "Zhen Yang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhenyang9261/web-hw12-node-mysql-bamazon/issues"
+  },
+  "homepage": "https://github.com/zhenyang9261/web-hw12-node-mysql-bamazon#readme"
+}
