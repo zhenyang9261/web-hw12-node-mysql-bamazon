@@ -1,16 +1,8 @@
-require("dotenv").config();
-var mysql = require("mysql");
 var inquirer = require("inquirer");
+var dbConn = require("./dbConn.js");
 
 var divider = "\n---------------------------------------------\n";
-
-var connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: process.env.DB_PWD,
-  database: "bamazon_db"
-});
+var connection = dbConn.connection;
 
 // Main app starts here
 connection.connect(function(err) {
