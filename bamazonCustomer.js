@@ -58,6 +58,13 @@ function buy() {
         connection.query("SELECT * FROM products WHERE item_id=?", item_id, function(err, res) {
             if (err) throw err;
             
+            // If the item id is not in the table, show error message
+            if (res.length === 0) {
+              console.log("\nThe item id you chose does not exist.\n");
+              continueOrExit();
+              return;
+            }
+
             var price = res[0].price;
             var quantity = res[0].quantity;
             
@@ -70,31 +77,29 @@ function buy() {
             })
             .then(function(answer2) {
           
-                var buyQuantity = answer2.quantity;
-  console.log("Price: " + price + "  Buy Quantity: " + buyQuantity + "  Quantity: " + quantity);
+                var buyQuantity = parseInt(answer2.quantity);
 
-                console.log(divider + "Total Cost of Your Purchase: " + price*buyQuantity + divider);
+                // If user input is not integer or is negative, show error message
+                if (isNaN(buyQuantity) || buyQuantity <=0) {
+                  console.log("The number entered is not valid.");
+                  continueOrExit();
+                  return;
+                }
+
+                // If not enough items left in stock, show error message
+                if (buyQuantity > quantity) {
+                  console.log("\nSorry your purchase cannot be completed. We only have " + quantity + " left in stock.");
+                  continueOrExit();
+                  return;
+                }
+
+                console.log(divider + "Total Cost of Your Purchase: " + (price*buyQuantity).toFixed(2) + divider);
 
                 // Update the quantity in database table
                 connection.query("UPDATE products SET quantity=? WHERE item_id=?", [quantity-buyQuantity, item_id], function(err, res) {
                     if (err) throw err;
             
-                    // 3rd question, continue buying or exit
-                    inquirer
-                      .prompt({
-                        type: "confirm",
-                        message: "Would you like to buy another item?",
-                        name: "buyAnother",
-                        default: false
-                    })
-                    .then(function(answer3) {
-                        
-                        if (answer3.buyAnother) {
-                            displayProducts();
-                        } else{
-                            connection.end();
-                        } 
-                    }); // 3rd inquirer ends
+                    continueOrExit();        
             
                 }); // UPDATE dabasebase query ends
           
@@ -103,4 +108,26 @@ function buy() {
         }); // SELECT database query ends
 
       }); // 1st inquirer ends  
+}
+
+/**
+ * To continue or exit the app
+ */
+function continueOrExit() {
+  
+  inquirer
+    .prompt({
+      type: "confirm",
+      message: "Would you like to buy another item?",
+      name: "continue",
+      default: false
+    })
+    .then(function(answer) {
+
+        if (answer.continue) {
+            displayProducts();
+        } else{
+            connection.end();
+        } 
+    }); 
 }
