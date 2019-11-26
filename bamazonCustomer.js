@@ -59,7 +59,7 @@ function buy() {
             // If the item id is not in the table, show error message
             if (res.length === 0) {
               console.log("\nThe item id you chose does not exist.\n");
-              continueOrExit();
+              exit();
               return;
             }
 
@@ -69,14 +69,14 @@ function buy() {
             // If user input is not integer or is negative, show error message
             if (isNaN(buyQuantity) || buyQuantity <=0) {
               console.log("\nThe number entered is not valid.\n");
-              continueOrExit();
+              exit();
               return;
             }
 
             // If not enough items left in stock, show error message
             if (buyQuantity > quantity) {
               console.log("\nSorry your purchase cannot be completed. We only have " + quantity + " left in stock.\n");
-              continueOrExit();
+              exit();
               return;
             }
             
@@ -86,7 +86,7 @@ function buy() {
             connection.query("UPDATE products SET quantity=? WHERE item_id=?", [quantity-buyQuantity, item_id], function(err, res) {
                 
               if (err) throw err;
-                continueOrExit();        
+                exit();        
             }); // UPDATE dabasebase query ends
 
         }); // SELECT database query ends
@@ -96,18 +96,18 @@ function buy() {
 /**
  * To continue or exit the app
  */
-function continueOrExit() {
+function exit() {
   
   inquirer
     .prompt({
       type: "confirm",
-      message: "Would you like to buy another item?",
-      name: "continue",
-      default: false
+      message: "Would you like to exit?",
+      name: "exit",
+      default: true
     })
     .then(function(answer) {
 
-        if (answer.continue) {
+        if (!answer.exit) {
             main();
         } else{
             connection.end();
