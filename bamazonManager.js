@@ -148,10 +148,74 @@ function addInventory() {
 
 /**
  * Function to add a new product
- * INSERT INTO products (product_name, department_name, price, quantity) VALUESSET <user input values>
+ * INSERT INTO products (product_name, department_name, price, quantity) VALUES <user input values>
  */
 function addProduct() {
 
+    inquirer
+    .prompt([{
+      name: "product_name",
+      type: "input",
+      message: "Name of the product: "
+    },
+    {
+      name: "department_name",
+      type: "input",
+      message: "Name of the department: "
+    },
+    {
+      name: "quantity",
+      type: "input",
+      message: "Quantity to add: "
+    },
+    {
+      name: "price",
+      type: "input",
+      message: "Price of the product: "
+    }])
+    .then(function(answer) {
+
+        var product_name = answer.product_name;
+        var department_name = answer.department_name;
+        var quantity = answer.quantity;
+        var price = answer.price;
+
+        console.log(product_name + " " + department_name + " " + quantity + " " + price);
+        // User input validation based on database table constraints
+        // product_name can't be null
+        if (!product_name) {
+            console.log("\nProduct Name can't be empty.\n");
+            exit();
+            return;
+        }
+
+        // quantity can't be null and has to be a positive integer
+        if (!quantity || isNaN(Number(quantity)) || !Number.isInteger(Number(quantity)) || parseInt(quantity) < 0) {
+            console.log("\nQuantity can't be empty and has to be a positive integer.\n");
+            exit();
+            return;
+        }
+
+        // price can't be null and has to be a positive number
+        if (!price || isNaN(Number(price)) || parseFloat(price) <= 0) {
+            console.log("\nPrice can't be empty and has to be a positive number.\n");
+            exit();
+            return;
+        }   
+
+        // Convert input to correct format 
+        var quantityInt = parseInt(quantity);
+        var priceFloat = parseFloat(price).toFixed(2);
+
+        // Insert a new row into the database table
+        connection.query("INSERT INTO products (product_name, department_name, quantity, price) \
+                          VALUES ('" + product_name + "', '" + department_name + "', " + quantityInt + ", " + priceFloat + ")", function(err, res) {
+            if (err) throw err;
+
+            console.log(divider + "New product (" + product_name + ") added." + divider);
+            exit();
+        });
+    });
 
 }
 
