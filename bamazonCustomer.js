@@ -1,31 +1,24 @@
-require("dotenv").config();
-var mysql = require("mysql");
 var inquirer = require("inquirer");
+var dbConn = require("./dbConn.js");
 
 var divider = "\n---------------------------------------------\n";
+var connection = dbConn.connection;
 
-var connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: process.env.DB_PWD,
-  database: "bamazon_db"
-});
-
-// Main app starts here
+// Connection starts here
 connection.connect(function(err) {
   if (err) throw err;
   
-  displayProducts();
+  main();
 });
 
 /**
- * Display all products 
+ * Main function starts here 
  */
-function displayProducts() {
+function main() {
   
   console.log("Please chooose from the products below" + divider);
 
+  // Display all products
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
     
@@ -42,22 +35,27 @@ function displayProducts() {
  */
 function buy() {
 
-    // 1st question, item id to buy
+    // Inquire item id to buy and quantity
     inquirer
-      .prompt({
+      .prompt([{
         name: "item_id",
         type: "input",
         message: "What's the ID of the item you would like to buy?"
-      })
-      .then(function(answer1) {
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "How many of this item you would like to buy?"
+      }])
+      .then(function(answer) {
         
-        // Save the item_id for later use
-        var item_id = answer1.item_id;
+        var item_id = answer.item_id;
+        var buyQuantity = parseInt(answer.quantity);
         
         // Get this item's details from the database table and store in local variables for later use
         connection.query("SELECT * FROM products WHERE item_id=?", item_id, function(err, res) {
             if (err) throw err;
-            
+
             // If the item id is not in the table, show error message
             if (res.length === 0) {
               console.log("\nThe item id you chose does not exist.\n");
@@ -67,47 +65,32 @@ function buy() {
 
             var price = res[0].price;
             var quantity = res[0].quantity;
-            
-            // 2nd question, how many to buy
-            inquirer
-              .prompt({
-                name: "quantity",
-                type: "input",
-                message: "How many of this item you would like to buy?"
-            })
-            .then(function(answer2) {
           
-                var buyQuantity = parseInt(answer2.quantity);
+            // If user input is not integer or is negative, show error message
+            if (isNaN(buyQuantity) || buyQuantity <=0) {
+              console.log("\nThe number entered is not valid.\n");
+              continueOrExit();
+              return;
+            }
 
-                // If user input is not integer or is negative, show error message
-                if (isNaN(buyQuantity) || buyQuantity <=0) {
-                  console.log("The number entered is not valid.");
-                  continueOrExit();
-                  return;
-                }
-
-                // If not enough items left in stock, show error message
-                if (buyQuantity > quantity) {
-                  console.log("\nSorry your purchase cannot be completed. We only have " + quantity + " left in stock.");
-                  continueOrExit();
-                  return;
-                }
-
-                console.log(divider + "Total Cost of Your Purchase: " + (price*buyQuantity).toFixed(2) + divider);
-
-                // Update the quantity in database table
-                connection.query("UPDATE products SET quantity=? WHERE item_id=?", [quantity-buyQuantity, item_id], function(err, res) {
-                    if (err) throw err;
+            // If not enough items left in stock, show error message
+            if (buyQuantity > quantity) {
+              console.log("\nSorry your purchase cannot be completed. We only have " + quantity + " left in stock.\n");
+              continueOrExit();
+              return;
+            }
             
-                    continueOrExit();        
-            
-                }); // UPDATE dabasebase query ends
-          
-            }); // 2nd inquirer ends
-        
+            console.log(divider + "Total Cost of Your Purchase: " + (price*buyQuantity).toFixed(2) + divider);
+
+            // Update the quantity in database table
+            connection.query("UPDATE products SET quantity=? WHERE item_id=?", [quantity-buyQuantity, item_id], function(err, res) {
+                
+              if (err) throw err;
+                continueOrExit();        
+            }); // UPDATE dabasebase query ends
+
         }); // SELECT database query ends
-
-      }); // 1st inquirer ends  
+      }); // inquirer ends  
 }
 
 /**
@@ -125,7 +108,7 @@ function continueOrExit() {
     .then(function(answer) {
 
         if (answer.continue) {
-            displayProducts();
+            main();
         } else{
             connection.end();
         } 
