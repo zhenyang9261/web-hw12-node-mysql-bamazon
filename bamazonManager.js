@@ -26,7 +26,7 @@ function main() {
     choices: ["View Products For Sale", "View Low Inventory", "Add to Inventory", "Add Product"]
   })
   .then(function(answer) {
-  
+
     switch(answer.option) {
         case "View Products For Sale":
             viewProducts();
@@ -54,11 +54,13 @@ function viewProducts() {
     connection.query("SELECT * FROM products", function(err, res) {
         if (err) throw err;
         
+        console.log(divider);
         for(var i=0; i<res.length; i++) {
             console.log(res[i].item_id + ". " + res[i].product_name + "  $" + res[i].price + "  (" + res[i].quantity + ")");
         }
-
-        continueOrExit();
+        console.log(divider);
+        
+        exit();
     });   
 }
 
@@ -68,6 +70,22 @@ function viewProducts() {
  */
 function viewLowInventory() {
 
+    connection.query("SELECT * FROM products WHERE quantity < 5", function(err, res) {
+        if (err) throw err;
+     
+        // No low inventory
+        if (res.length === 0) {
+            console.log(divider + "No low inventory at this time." + divider);
+        }
+        else {
+            console.log(divider);
+            for(var i=0; i<res.length; i++) {
+                console.log(res[i].item_id + ". " + res[i].product_name + "  $" + res[i].price + "  (" + res[i].quantity + ")");
+            }
+            console.log(divider);
+        }
+        exit();
+    });   
 
 }
 
@@ -75,7 +93,7 @@ function viewLowInventory() {
  * Function to add quantity to a certain item
  * UPDATE products SET quantity=<new quatity> WHERE item_id=<user input item id>
  */
-function viewLowInventory() {
+function addInventory() {
 
 
 }
@@ -92,18 +110,18 @@ function addProduct() {
 /**
  * To continue or exit the app
  */
-function continueOrExit() {
+function exit() {
   
   inquirer
     .prompt({
       type: "confirm",
-      message: "Would you like to choose another option?",
-      name: "continue",
-      default: false
+      message: "Would you like to exit?",
+      name: "exit",
+      default: true
     })
     .then(function(answer) {
 
-        if (answer.continue) {
+        if (!answer.exit) {
             main();
         } else{
             connection.end();
