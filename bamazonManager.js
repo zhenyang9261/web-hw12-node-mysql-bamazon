@@ -59,7 +59,7 @@ function viewProducts() {
             console.log(res[i].item_id + ". " + res[i].product_name + "  $" + res[i].price + "  (" + res[i].quantity + ")");
         }
         console.log(divider);
-        
+
         exit();
     });   
 }
@@ -95,6 +95,54 @@ function viewLowInventory() {
  */
 function addInventory() {
 
+    // Inquire item id to and quantity
+    inquirer
+    .prompt([{
+      name: "item_id",
+      type: "input",
+      message: "What's the ID of the item you would like to add inventory to?"
+    },
+    {
+      name: "quantity",
+      type: "input",
+      message: "How many of this item you would like to add?"
+    }])
+    .then(function(answer) {
+      
+      var item_id = answer.item_id;
+      var addQuantity = parseInt(answer.quantity);
+      
+      // Get this item's details from the database table and store in local variables for validation purpose
+      connection.query("SELECT * FROM products WHERE item_id=?", item_id, function(err, res) {
+          if (err) throw err;
+          // If the item id is not in the table, show error message
+          if (res.length === 0) {
+            console.log("\nThe item id you chose does not exist.\n");
+            exit();
+            return;
+          }
+          
+          var quantity = res[0].quantity;
+        
+          // If user input is not integer or is negative, show error message
+          if (isNaN(addQuantity) || addQuantity <=0) {
+            console.log("\nThe number entered is not valid.\n");
+            exit();
+            return;
+          }
+
+          var newQuantity = quantity + addQuantity;
+
+          // Update the quantity in database table
+          connection.query("UPDATE products SET quantity=? WHERE item_id=?", [newQuantity, item_id], function(err, res) {
+              
+            if (err) throw err;
+
+            console.log(divider + "You added inventory " + addQuantity + " to item " + item_id + ". Total inventory now is " + newQuantity + divider);
+            exit();        
+          }); // UPDATE dabasebase query ends
+      }); // SELECT database query ends
+    }); // inquirer ends  
 
 }
 
