@@ -60,9 +60,26 @@ function salesByDept() {
         if (err) throw err;
         
         console.log(divider);
+
+        // Table display requires an array of objects
+        var resultTable = [];
+        var tableObj;
+
         for(var i=0; i<res.length; i++) {
-            console.log(res[i].department_id + ". " + res[i].department_name + "  $" + res[i].total_product_sales + "  (" + res[i].total_profit + ")");
+
+            tableObj = {
+                department_id: res[i].department_id,
+                department_name: res[i].department_name,
+                over_head_costs: res[i].over_head_costs,
+                total_product_sales: res[i].total_product_sales,
+                total_profit: res[i].total_profit
+            }
+            resultTable.push(tableObj);
         }
+
+        // Display the table
+        console.table(resultTable);
+
         console.log(divider);
 
         exit();
