@@ -83,7 +83,16 @@ function buy() {
             console.log(divider + "Total Cost of Your Purchase: " + (price*buyQuantity).toFixed(2) + divider);
 
             // Update the quantity in database table
-            connection.query("UPDATE products SET quantity=? WHERE item_id=?", [quantity-buyQuantity, item_id], function(err, res) {
+            var newValue = [
+              {
+                quantity: quantity-buyQuantity,
+                product_sales: price*buyQuantity
+              },
+              {
+                item_id: item_id
+              }
+            ];
+            connection.query("UPDATE products SET ? WHERE ?", newValue, function(err, res) {
                 
               if (err) throw err;
                 exit();        

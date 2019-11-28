@@ -12,3 +12,13 @@ VALUES ("The Guardians", "Books", 14.99, 50),
        ("Nexxus Shampoo", "Personal Care", 9.99, 40),
        ("Wireless Mouse", "Electronics", 10.99, 30);
 
+INSERT INTO departments (department_name, over_head_costs)
+VALUES ("Books", 1000.00),
+	   ("Toys", 1200.00),
+       ("Household", 800.00),
+       ("Personal Care", 900.00),
+       ("Electronics", 1200.00),
+       ("Sports", 1100.00),
+       ("Software", 1300.00);
+       
+       
