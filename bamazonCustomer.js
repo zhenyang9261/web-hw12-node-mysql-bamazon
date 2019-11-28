@@ -65,6 +65,7 @@ function buy() {
 
             var price = res[0].price;
             var quantity = res[0].quantity;
+            var product_sales = res[0].product_sales;
           
             // If user input is not integer or is negative, show error message
             if (isNaN(buyQuantity) || buyQuantity <=0) {
@@ -86,7 +87,7 @@ function buy() {
             var newValue = [
               {
                 quantity: quantity-buyQuantity,
-                product_sales: price*buyQuantity
+                product_sales: product_sales + price*buyQuantity
               },
               {
                 item_id: item_id
