@@ -65,6 +65,7 @@ function buy() {
 
             var price = res[0].price;
             var quantity = res[0].quantity;
+            var product_sales = res[0].product_sales;
           
             // If user input is not integer or is negative, show error message
             if (isNaN(buyQuantity) || buyQuantity <=0) {
@@ -83,7 +84,16 @@ function buy() {
             console.log(divider + "Total Cost of Your Purchase: " + (price*buyQuantity).toFixed(2) + divider);
 
             // Update the quantity in database table
-            connection.query("UPDATE products SET quantity=? WHERE item_id=?", [quantity-buyQuantity, item_id], function(err, res) {
+            var newValue = [
+              {
+                quantity: quantity-buyQuantity,
+                product_sales: product_sales + price*buyQuantity
+              },
+              {
+                item_id: item_id
+              }
+            ];
+            connection.query("UPDATE products SET ? WHERE ?", newValue, function(err, res) {
                 
               if (err) throw err;
                 exit();        
