@@ -12,10 +12,11 @@ connection.connect(function(err) {
 });
 
 /**
- * Main function starts here 
+ * Main function of the app starts here 
  */
 function main() {
   
+  console.log(divider);
   console.log("Please chooose from the products below" + divider);
 
   // Display all products
@@ -52,24 +53,24 @@ function buy() {
         var item_id = answer.item_id;
         var buyQuantity = parseInt(answer.quantity);
         
-        // Get this item's details from the database table and store in local variables for later use
         connection.query("SELECT * FROM products WHERE item_id=?", item_id, function(err, res) {
             if (err) throw err;
 
-            // If the item id is not in the table, show error message
+            // If the item id is not in the table, callback response array will be empty. Show error message
             if (res.length === 0) {
               console.log("\nThe item id you chose does not exist.\n");
               exit();
               return;
             }
 
+            // Get this item's details from the query result and store in local variables for later use
             var price = res[0].price;
             var quantity = res[0].quantity;
             var product_sales = res[0].product_sales;
           
-            // If user input is not integer or is negative, show error message
+            // If user input quantity is not integer or is negative, show error message
             if (isNaN(buyQuantity) || buyQuantity <=0) {
-              console.log("\nThe number entered is not valid.\n");
+              console.log("\nThe quantity number entered is not valid.\n");
               exit();
               return;
             }

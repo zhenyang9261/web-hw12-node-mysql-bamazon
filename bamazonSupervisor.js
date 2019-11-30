@@ -4,7 +4,7 @@ var dbConn = require("./dbConn.js");
 var divider = "\n---------------------------------------------\n";
 var connection = dbConn.connection;
 
-// Main app starts here
+// Connection starts here
 connection.connect(function(err) {
   if (err) throw err;
   
@@ -12,7 +12,7 @@ connection.connect(function(err) {
 });
 
 /**
- * Main point of the app. Provide 4 options
+ * Main function of the app starts here. Provide 2 options
  */
 function main() {
   
@@ -108,15 +108,15 @@ function newDept() {
         var department_name = answer.department_name;
         var overhead = answer.overhead;
 
-        // User input validation based on database table constraints
-        // department_name can't be null
+        // User input validation based on database table constraints and user input 
+        // 1. department_name can't be null
         if (!department_name) {
             console.log("\nDepartment Name can't be empty.\n");
             exit();
             return;
         }
 
-        // overhead can't be null and has to be a positive number
+        // 2. overhead can't be null and has to be a positive number
         if (!overhead || isNaN(Number(overhead)) || parseFloat(overhead) <= 0) {
             console.log("\nOverhead Costs can't be empty and has to be a positive number.\n");
             exit();

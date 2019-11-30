@@ -2,7 +2,7 @@ USE bamazon_db;
 
 INSERT INTO products (product_name, department_name, price, quantity)
 VALUES ("The Guardians", "Books", 14.99, 50),
-	   ("The Dancing Girls", "Books", 9.99, 40),
+	("The Dancing Girls", "Books", 9.99, 40),
        ("Jenga", "Toys", 6.99, 30),
        ("Lego", "Toys", 18.99, 80),
        ("Coffee mug", "Household", 4.99, 20),
@@ -14,7 +14,7 @@ VALUES ("The Guardians", "Books", 14.99, 50),
 
 INSERT INTO departments (department_name, over_head_costs)
 VALUES ("Books", 1000.00),
-	   ("Toys", 1200.00),
+	("Toys", 1200.00),
        ("Household", 800.00),
        ("Personal Care", 900.00),
        ("Electronics", 1200.00),
