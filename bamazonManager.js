@@ -4,7 +4,7 @@ var dbConn = require("./dbConn.js");
 var divider = "\n---------------------------------------------\n";
 var connection = dbConn.connection;
 
-// Main app starts here
+// Dababase onnection starts here
 connection.connect(function(err) {
   if (err) throw err;
   
@@ -12,7 +12,7 @@ connection.connect(function(err) {
 });
 
 /**
- * Main point of the app. Provide 4 options
+ * Main function of the app starts here. Provide 4 options
  */
 function main() {
   
@@ -91,7 +91,7 @@ function viewLowInventory() {
 
 /**
  * Function to add quantity to a certain item
- * UPDATE products SET quantity=<new quatity> WHERE item_id=<user input item id>
+ * UPDATE products SET quantity=<current quatity + user input quantity> WHERE item_id=<user input item id>
  */
 function addInventory() {
 
@@ -112,16 +112,17 @@ function addInventory() {
       var item_id = answer.item_id;
       var addQuantity = parseInt(answer.quantity);
       
-      // Get this item's details from the database table and store in local variables for validation purpose
       connection.query("SELECT * FROM products WHERE item_id=?", item_id, function(err, res) {
           if (err) throw err;
-          // If the item id is not in the table, show error message
+          
+          // If the item id is not in the table, callback response array will be empty. Show error message
           if (res.length === 0) {
             console.log("\nThe item id you chose does not exist.\n");
             exit();
             return;
           }
           
+          // Get this item's details from the database table and store in local variables.
           var quantity = res[0].quantity;
         
           // If user input is not integer or is negative, show error message
@@ -180,23 +181,22 @@ function addProduct() {
         var quantity = answer.quantity;
         var price = answer.price;
 
-        console.log(product_name + " " + department_name + " " + quantity + " " + price);
-        // User input validation based on database table constraints
-        // product_name can't be null
+        // User input validation based on database table constraints and user input
+        // 1. product_name can't be null
         if (!product_name) {
             console.log("\nProduct Name can't be empty.\n");
             exit();
             return;
         }
 
-        // quantity can't be null and has to be a positive integer
+        // 2. quantity can't be null and has to be a positive integer
         if (!quantity || isNaN(Number(quantity)) || !Number.isInteger(Number(quantity)) || parseInt(quantity) < 0) {
             console.log("\nQuantity can't be empty and has to be a positive integer.\n");
             exit();
             return;
         }
 
-        // price can't be null and has to be a positive number
+        // 3. price can't be null and has to be a positive number
         if (!price || isNaN(Number(price)) || parseFloat(price) <= 0) {
             console.log("\nPrice can't be empty and has to be a positive number.\n");
             exit();
